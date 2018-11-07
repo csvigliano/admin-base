@@ -1,6 +1,8 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { MatPaginator, MatSort, MatTableDataSource } from '@angular/material';
 
+declare var jsPDF: any; // Important
+
 @Component({
     selector: 'app-tables',
     templateUrl: './tables.component.html',
@@ -9,19 +11,20 @@ import { MatPaginator, MatSort, MatTableDataSource } from '@angular/material';
 export class TablesComponent implements OnInit {
     displayedColumns = ['id', 'name', 'progress', 'color'];
     dataSource: MatTableDataSource<UserData>;
+    users: UserData[] = [];
 
     @ViewChild(MatPaginator) paginator: MatPaginator;
     @ViewChild(MatSort) sort: MatSort;
 
     constructor() {
         // Create 100 users
-        const users: UserData[] = [];
+        // const users: UserData[] = [];
         for (let i = 1; i <= 100; i++) {
-            users.push(createNewUser(i));
+            this.users.push(createNewUser(i));
         }
 
         // Assign the data to the data source for the table to render
-        this.dataSource = new MatTableDataSource(users);
+        this.dataSource = new MatTableDataSource(this.users);
     }
 
     ngOnInit() {
@@ -36,6 +39,25 @@ export class TablesComponent implements OnInit {
         if (this.dataSource.paginator) {
             this.dataSource.paginator.firstPage();
         }
+    }
+
+    exportPDF() {
+        const doc = new jsPDF('l', 'pt');
+        const rows = [];
+
+        this.dataSource.data.forEach(p => {
+            rows.push(Object.values(p));
+        });
+
+        doc.autoTable(this.displayedColumns, rows, {
+            theme: 'grid',
+            headerStyles: {
+            fillColor: [235, 185, 78],
+            fontSize: 14
+            },
+            styles: {overflow: 'linebreak'},
+        });
+        doc.save('tablita.pdf');
     }
 }
 

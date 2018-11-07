@@ -1,7 +1,7 @@
+<button mat-raised-button (click)="exportPDF()">Export PDF</button>
 <mat-form-field>
     <input matInput (keyup)="applyFilter($event.target.value)" placeholder="Filter">
 </mat-form-field>
-
 <div class="mat-elevation-z8">
     <table mat-table [dataSource]="dataSource" matSort>
 
